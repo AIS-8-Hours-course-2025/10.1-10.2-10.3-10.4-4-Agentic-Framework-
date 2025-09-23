@@ -1,0 +1,301 @@
+{
+  "name": "10.1 (1) Prompt Chaining : Agentic Framework",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Prompt Chaining\n\n\n✅ Improved Accuracy and Quality – Each step focuses on a specific task, reducing errors and hallucinations.  \n\n✅ Greater Control Over Each Step – You can refine or tweak individual steps without affecting the entire process.  \n\n✅ Specialization Leads to More Effective AI Agents – Each AI agent becomes a specialist rather than a generalist, improving reliability.  \n\n✅ Easier Debugging and Optimization – If an output isn’t ideal, you only need to fix the weak link rather than redoing everything.  \n\n✅ More Scalable and Reusable Workflows – A structured, step-by-step workflow can be repurposed for different use cases.  \n",
+        "height": 352,
+        "width": 752,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -272
+      ],
+      "id": "7bbeb807-8788-447b-b574-d56fc89ca469",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the topic to write a blog about:  {{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "## Overview \nYou are an expert outline writer. Your job is to generate a structured outline for a blog post with section titles and key points"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        160
+      ],
+      "id": "2af36126-d81a-4b20-a648-8dc8ec4aa3ce",
+      "name": "Outline Writer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the outline:  {{ $json.output }}",
+        "options": {
+          "systemMessage": "=## Overview\n\nYou are an expert blog evaluator. Revise this outline and ensure it covers the following key criteria:\n(1) Engaging Introduction\n(2) Clear Section Breakdown\n(3) Logical Flow\n(4) Conclusion with key takeaways\n\n## Output\nOnly output the revised outline\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        160
+      ],
+      "id": "f9e0ac45-a591-4381-b52b-ba31da2f8995",
+      "name": "Outline Evaluation"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the revised Outline:  {{ $json.output }}",
+        "options": {
+          "systemMessage": "=# Overview\n\nYoua are an expert blog writer. Generate a detailed blog post using the outline with well-structured paragraphs and engaging contents."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        160
+      ],
+      "id": "72ea5142-f7ec-452b-ad5b-dc351562eacc",
+      "name": "Blog Writer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        352
+      ],
+      "id": "19cefe0b-969f-4b0c-8a67-f0ffc93904d5",
+      "name": "2.0 Flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nhAOL9sKMfyG8Vrt",
+          "name": "Google Gemini(PaLM) API account AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        368
+      ],
+      "id": "3040062a-2390-467b-b7aa-35e767a0f27a",
+      "name": "4o mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "2ll7nWhcZokpqeYF",
+          "name": "OpenAi account AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1nbI3RVYy3pF4P2vO0Ng5OVnzAblnMcs6FeAXYet-qQo/edit?tab=t.0",
+        "simple": "=",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        464,
+        160
+      ],
+      "id": "703f9c09-e97c-43b6-a0ca-7c812aef3fa4",
+      "name": "Post to Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "83BK3T3raFuSKK84",
+          "name": "Google Docs account AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## IMP\nIts going to lead to improved accuracy and quality beacause each step focuses on specific task  which will help reduce errors and hallucinations. \n\nGreater control over each step \n\nwe can refine the system prompt of the outline writer and then we can refine the prompt of the evaluator. so we can really tweak whats going on and how data is being tranfered \n\n1. 2.0 Flash: we just need a brief outline to be written here\n2. 4o mini: Its a little more powerfull, a little more expensive but still not bad and we want this more powerful chat model to be doing the evaluating and refining the outline \n3. Claude 3.5 or Deepseek R1: Actual blog writing content, beacuse its going to be more powerful and going to take that revised outline and then strcture a really nice blog post for us",
+        "height": 336,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        512
+      ],
+      "id": "b84358ed-e53c-428f-9c71-38e22b2f3924",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        160
+      ],
+      "id": "4e87139f-d905-4e46-b61f-2431e1372723",
+      "name": "When chat message received",
+      "webhookId": "4558da26-8ad7-404a-a2d1-c931db9fc84b",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet-20240620",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        144,
+        384
+      ],
+      "id": "2135bc20-8961-4796-9486-29c3a07f9aa8",
+      "name": "Deepseek R1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "czIsN4rd8sIKdRuL",
+          "name": "OpenRouter AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Input Query : \n\nCoffee",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        160
+      ],
+      "id": "655a79e7-6ebb-40dc-9ca0-5bb78792faef",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Outline Writer": {
+      "main": [
+        [
+          {
+            "node": "Outline Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outline Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blog Writer": {
+      "main": [
+        [
+          {
+            "node": "Post to Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.0 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Outline Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4o mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Outline Evaluation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Outline Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek R1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9bfcbcb5-43db-44b2-a997-2fd4e8bf6983",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91f42292365f2736b62ea45ddfd531a5d9a185f2bc4a363bfb1ae1188ac76851"
+  },
+  "id": "NWywaBTJiGCAJPER",
+  "tags": []
+}

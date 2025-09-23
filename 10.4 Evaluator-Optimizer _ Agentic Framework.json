@@ -1,0 +1,344 @@
+{
+  "name": "10.4 (4) Evaluator-Optimizer : Agentic Framework",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Evaluator-Optimizer\n\n☑️ Ensures High-Quality Outputs – AI doesn’t just generate code, it verifies and refines until all requirements are met.\n\n☑️ Reduces Errors & Manual Review – Automates verification, minimizing the need for human debugging.\n\n☑️ Flexible & Scalable – Can be adapted to content generation, structured data validation, and UI text refinement.\n\n☑️ Optimized AI Performance – The iterative approach ensures continuous improvement of AI-generated responses.\n",
+        "height": 304,
+        "width": 752,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -1248
+      ],
+      "id": "08095812-20eb-49d5-9797-4212cdcd3553",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "5cb57b8d-36f6-4b42-bde9-4b6fef4c35ab",
+      "name": "When chat message received",
+      "webhookId": "536bd4a7-f88a-44db-a262-43ca8eef30f2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=## Overview\n\nYou are an expert biography writer. You will receive information about a person and your job is to create an entire profile using the information they gave you. You are allowed to be creative."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "f0591099-b6f5-4a7c-a9fa-9210d482fb9a",
+      "name": "Biography Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "43308b52-cf12-4172-bf21-83f22b21fadf",
+              "name": "bio",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -16
+      ],
+      "id": "c8a37b42-0264-47cb-abfa-e16fa3254246",
+      "name": "Set Bio"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the biography : {{$json.bio}}\n",
+        "options": {
+          "systemMessage": "=## Overview\nYou are an expert biography evaluator. Your job is to provide feedback on the biography. \n\n## Criteria\nMake sure the biography includes a quote from the person. This could be their favorite saying or a piece of advice. It is essential that every biography has a quote. Make sure the biography is light and humorous. Make sure the biography has no emojis \n\n##output. \nYou only need to output feedback Once the biography is finished and all the criteria are met, simply output finished."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "0ffd67ca-77a1-4ea2-8b68-16fa26af3723",
+      "name": "Evaluator Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9fdc09c6-8212-4957-92e6-60aad4bc0dda",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Finished",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        -16
+      ],
+      "id": "dd910901-e78b-4c44-b9d0-9c5b3556fdd1",
+      "name": "Evaluate"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1a328g-P9HLSRKZacZY-aFad1tqMXSruPIHkzE7-7t90/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -192
+      ],
+      "id": "08ad2c64-535c-4215-964c-b3f66a812c90",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "83BK3T3raFuSKK84",
+          "name": "Google Docs account AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Biography : {{$('Set Bio').item.json.bio}}\n\nFeedback: {{ $('Evaluator Agent').item.json.output }}",
+        "options": {
+          "systemMessage": "=## Overview\nYou are an expert biography revisor. Your job is to take the biography and optimize it based on the feedback."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "0cbe1273-6e2a-4ecc-8207-7d59a5cf5021",
+      "name": "Optimizer Agent"
+    },
+    {
+      "parameters": {
+        "content": "## Evaluator Agent\n\nEvaluator Agent decide if whats passing through is good or not if its good its fine , but if not then going to optimized and then send back to evaluator for more evaluation . And this is endless loop until the evaluator agent says its good and then only send it off \n\nSimilar to Human in Loop (video on Youtube) similar to it providing feedback and we were the ones bascially deciding if it was good to go or not . But in this agent that does that , were its optimizing all your workflows on the back end without you being in the loop \n",
+        "height": 256,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -912
+      ],
+      "id": "c58844d2-dc48-4b55-a08d-f82a4a40e3cf",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Benifits\n\n1. High Quality Outputs\n2. Reduce errors and manual review\n3. flexible and scalable\n4. Optimize Ai performance beacuse its sort of iterative approach taht focuses on continues improvement from these AI generated responses\n",
+        "height": 224,
+        "width": 528
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -1248
+      ],
+      "id": "2517c656-dbff-480e-ba11-85e158a0f8ed",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        240
+      ],
+      "id": "bfd52fa2-c0ed-4988-890a-78a89441835d",
+      "name": "gpt-4.1-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "2ll7nWhcZokpqeYF",
+          "name": "OpenAi account AIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Input Query: \n\nJin 43, lives by the ocean",
+        "height": 96
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        0
+      ],
+      "id": "5bf017d1-f5a6-4881-885d-fabd3d5426af",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Biography Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Biography Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Bio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Bio": {
+      "main": [
+        [
+          {
+            "node": "Evaluator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluator Agent": {
+      "main": [
+        [
+          {
+            "node": "Evaluate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Optimizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Optimizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Bio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4.1-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Biography Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Evaluator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Optimizer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "979b2f9d-1ce7-4289-8c62-04f367263556",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91f42292365f2736b62ea45ddfd531a5d9a185f2bc4a363bfb1ae1188ac76851"
+  },
+  "id": "7dI8qrSF88nVTkjQ",
+  "tags": []
+}
