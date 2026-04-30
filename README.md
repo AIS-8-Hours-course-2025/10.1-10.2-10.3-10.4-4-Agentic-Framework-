@@ -12,6 +12,10 @@ Each framework focuses on a unique strategy — choose the one that best fits yo
 
 ---
 
+[![Watch the Project](https://raw.githubusercontent.com/AIS-8-Hours-course-2025/10.1-10.2-10.3-10.4-4-Agentic-Framework-/main/Thumbnail.png)](https://www.youtube.com/watch?v=OtPRPE97Kng)
+
+---
+
 # 1. Agentic Framework - Prompt Chaining
 
 ![Gemini 2.5 Flash](https://img.shields.io/badge/model-Gemini%202.5%20Flash-blue) ![GPT-4o-mini](https://img.shields.io/badge/model-GPT--4o--mini-purple) ![Claude 3.5 Sonnet](https://img.shields.io/badge/model-Claude%203.5%20Sonnet-yellow)
